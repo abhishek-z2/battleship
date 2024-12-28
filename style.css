@@ -39,6 +39,8 @@ body{
 }
 
 div:has(:contains("S")) {
-    color: red;
+    color: rgb(255, 176, 103);
   }
+  
+
   

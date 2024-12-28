@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "javascript module final project [theodinproject.com]",
   "main": "game.js",
+  "type":"module",
   
   "scripts": {
     "test": "jest",

@@ -25,39 +25,68 @@ function createGameboard(){
     function placeShip(ship,x,y,direction='horizontal'){
         if(direction==='horizontal'){
             if (y + ship.length > 10) {
+                return false;
                 throw new Error('cannot place ship');
             }
             for(let i = 0;i<ship.length;i++){
                 if(board[x][y+i]!==null){
+                    return false;
                     throw new Error('cannot place ship')
                 }
                 board[x][y+i]=ship;
             }
         } else if(direction==='vertical'){
             if (x + ship.length > 10) {  // Ensure ship fits vertically
-                throw new Error('ccannot place ship');
+                return false;
+                throw new Error('cannot place ship');
             }
             for(let i = 0;i<ship.length;i++){
-                if(board[x+i][y]!==null)
+                if(board[x+i][y]!==null){
+                    return false;
                     throw new Error('cannot place ship');
-                else board[x+i][y]=ship;
+                }
+                board[x+i][y]=ship;
             }
         }
         ships.push(ship);
+        return true;
     }
 
-    function receiveAttack(x,y){
-        if(hasBeenAttacked(x,y))
-            return false;
-        if(board[x][y]!==null){
-            board[x][y].hit();
-            receivedAttacks.push([x,y]);
-            return true;
-        } else {
-            missedAttacks.push([x,y]);
+    // function receiveAttack(x,y){
+    //     if(hasBeenAttacked(x,y))
+    //         return false;
+    //     if(board[x][y]!==null){
+    //         board[x][y].hit();
+    //         receivedAttacks.push([x,y]);
+    //         return true;
+    //     } else {
+    //         missedAttacks.push([x,y]);
+    //         return false;
+    //     }
+    // }
+
+    function receiveAttack(x, y) {
+        console.log(`Attack at (${x}, ${y})`);
+        console.log('Has been attacked:', hasBeenAttacked(x, y));
+        console.log('Board before attack:', board);
+    
+        if (hasBeenAttacked(x, y)) {
+            console.log('Already attacked');
             return false;
         }
+        console.log(board[x][y]);
+        if (board[x][y] !== null) {
+            board[x][y].hit();
+            receivedAttacks.push([x, y]);
+            console.log('Hit:', board[x][y]);
+            return [true,'hit'];
+        } else {
+            missedAttacks.push([x, y]);
+            console.log('Miss');
+            return [true,'miss'];
+        }
     }
+    
 
     function allShipSunk(){
         return ships.every((ship)=>ship.isSunk());
@@ -79,14 +108,20 @@ function Player(name,isComputer=false){
     }
 
     const computerPlayerAttack = (opponentGameboard)=>{
-        let coords;
+        let coords,status;
         do {
             coords = getRandomCoordinates();
-        } while (opponentGameboard.receiveAttack(coords[0],coords[1]))
+        } while (!(status=opponentGameboard.receiveAttack(coords[0],coords[1])))
+        console.log([coords,status]);
+        return [coords,status];
     }
-    const realPlayerAttack = (x,y,opponentGameboard)=>{
-        return opponentGameboard.receiveAttack(x,y);
-    }
+    const realPlayerAttack = (x, y, opponentGameboard) => {
+        console.log(`${name} attacking (${x}, ${y})`);
+        const result = opponentGameboard.receiveAttack(x, y);
+        console.log('Attack result:', result);
+        return result;
+    };
+    
 
     const attack = (x,y,opponentGameboard)=>{
         return isComputer
@@ -96,7 +131,7 @@ function Player(name,isComputer=false){
 
     const getGameBoard = ()=> gameboard;
 
-    return {attack,getGameBoard,isComputer,name}
+    return {attack,getGameBoard,isComputer,name,getRandomCoordinates}
 };
 
 
