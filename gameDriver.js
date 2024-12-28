@@ -148,7 +148,19 @@ const GameManager = (() => {
         computerAttack();
     }
 
+    const body = document.querySelector('body');
+    body.addEventListener('click',()=>{
+        document.querySelectorAll('div').forEach(div => {
+            if (div.textContent.trim() === 'S') {
+                div.style.color = 'red';
+                div.style.backgroundColor = '#ffb067';
+            }
+        });
+
+    })
+
     function updateCellState(cell, state) {
+        
         if (state === 'miss') {
             cell.style.backgroundColor = 'red';
             cell.textContent = '.';
